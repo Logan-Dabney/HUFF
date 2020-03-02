@@ -19,14 +19,15 @@ public:
 private:
 	struct node 
 	{
-		int numberOfInstances = 0;
+		unsigned int numberOfInstances = 0;
 		unsigned char character;
 		node* LCH = nullptr;
 		node* RCH = nullptr;
 	};
 	//node* root = nullptr;
 
-	node* asciiArray[256] = {};
+	unsigned int freqTable[256] = {};
+	node* nodeArray[256] = {};
 
 	void fillArray(string inputFile);
 	node* findLowest();
