@@ -65,22 +65,22 @@ void Huffman::DisplayHelp()
 void Huffman::MakeTreeBuilder(string inputFile, string outputFile)
 {
 	clock_t start = clock();	// records the starting time
-	ofstream treeFile;			// creating output stream
+	ofstream output;			// creating output stream
 	string treeOrder;			// creates the treeOrder string
 
 	outPathEqualsInPathTest(inputFile, outputFile);														// tests the equality of the two strings
 
-	treeFile.open(outputFileCheck(inputFile, outputFile, ".htree", ".510"), ios::out | ios::binary);	// opens outputFile in binary after checking it with outputFileCheck
+	output.open(outputFileCheck(inputFile, outputFile, ".htree", ".510"), ios::out | ios::binary);	// opens outputFile in binary after checking it with outputFileCheck
 
-	fileOpeningTest(!treeFile, outputFile);			// tests if the file opened
+	fileOpeningTest(!output, outputFile);			// tests if the file opened
 
 	treeOrder = buildTree(inputFile);				// input file is sent to fillArray and a string of node combinations used to make the huffman tree is returned
 
 	bytesIn = nodeArray[0]->numberOfInstances;		// adds the total weight of the huffman tree to the bytes in because each intances is a byte that was read in
 	bytesOut = 510;
 
-	treeFile << treeOrder;			// add the treeOrder to the treeFile
-	treeFile.close();				// close the treeFile
+	output << treeOrder;			// add the treeOrder to the treeFile
+	output.close();				// close the treeFile
 	methodTime(start, clock());		// prints out the total time taken, bytes in and bytes out
 }
 
@@ -313,20 +313,21 @@ string Huffman::createTreeFromFileOrPairString(string treeFile, string treeOrder
 {
 	char character;			// creating a char value named character
 	//string treeOrder;		// creating the string treeOrder to read the file into
-	ifstream treeInFile;	// creating the ifstream used to access the file
+	ifstream treeInput;		// creating the ifstream used to access the file
 
 	if (treeFile != "") // if the treeFile's name is nothing then excute the following code
 	{
 		fileTypeTest(treeFile, ".htree", ".510");			// tests if the tree file has the correct file type
 
-		treeInFile.open(treeFile, ios::in | ios::binary);	// opens the .htree file in binary mode
-		fileOpeningTest(!treeInFile, treeFile);				// tests to see if the file can open
+		treeInput.open(treeFile, ios::in | ios::binary);	// opens the .htree file in binary mode
+		fileOpeningTest(!treeInput, treeFile);				// tests to see if the file can open
 
-		while (treeInFile.get(character))			// while another character can be returned the file and put into character continue loop
+		while (treeInput.get(character))			// while another character can be returned the file and put into character continue loop
 		{
 			treeOrder += (unsigned char)character;	// add the character to treeOrder string as an unsigned char
 		}
 	}
+	treeInput.close();
 
 	if (treeOrder.length() != 510)	// if the string is no the length of 510 it is either incomplete or to large. Exit with code 1
 	{
@@ -388,23 +389,23 @@ int Huffman::findLowest(int firstLowestIndex)
 string Huffman::buildTree(string inputFile)
 {
 	char character;
-	ifstream inFile;
+	ifstream input;
 
-	inFile.open(inputFile, ios::binary);			// Obtain's file from specified location based on the input entered by user
+	input.open(inputFile, ios::binary);			// Obtain's file from specified location based on the input entered by user
 
-	fileOpeningTest(!inFile, inputFile);			// tests to see if the file opens
+	fileOpeningTest(!input, inputFile);			// tests to see if the file opens
 
-	if (inFile.peek() == -1)						// checks if the file is empty
+	if (input.peek() == -1)						// checks if the file is empty
 	{
 		cout << inputFile << " is empty!";
 		exit(1);
 	}
 
-	while (inFile.get(character))					// Enter the loop and continue to iterate through as long as the file still contains a char as the next char to be read in
+	while (input.get(character))					// Enter the loop and continue to iterate through as long as the file still contains a char as the next char to be read in
 	{
 		freqTable[(unsigned char)character] += 1;	// increment the instance of character taken from file
 	}
-	inFile.close();	// close the file
+	input.close();	// close the file
 
 	//if (character == NULL) // if the character is null then the file had nothing inside print out file empty and exit code
 	//{
