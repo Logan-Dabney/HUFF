@@ -11,11 +11,9 @@
 // Date:      Mar 1, 2020​
 // Copyright: Copyright 2020 by Logan Dabney. All rights reserved.
 //==============================================================================================
-#define debug
 
 #include <iostream>
 #include "Huffman.h"
-//#include <ifstream>
 
 using namespace std;
 
@@ -52,6 +50,8 @@ int main(int argc, char* argv[])
 		{
 			tree->DisplayHelp(); // if the third value of argv is -help, -? or -h display help screen
 		}
+
+		tree->~Huffman(); // if it gets here both output and input were the same and the huffman needs to be destroyed
 	}
 
 	// debug
@@ -86,5 +86,5 @@ int main(int argc, char* argv[])
 	//	{
 	//		tree->DisplayHelp(); // if the third value of argv is -help, -? or -h display help screen
 	//	}
-	}
+	//}
 }

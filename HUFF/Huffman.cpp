@@ -21,8 +21,6 @@
 
 Huffman::Huffman()
 {
-	//int asciiArray[256] = {};
-	//root = nullptr;
 	for (int i = 0; i < 256; i++)
 	{
 		freqTable[i] = 0;
@@ -33,30 +31,27 @@ Huffman::Huffman()
 
 Huffman::~Huffman()
 {
-	delete[] &freqTable;
-	delete[] &encodingMap;
+	for (int i = 0; i < 256; i++)
+	{
+		delete postTraversal(nodeArray[i]);
+	}
 }
 
 // Displays the functionality of the huffman program in easily readable text
 void Huffman::DisplayHelp()
 {
 	cout << "HUFF -operation [depends on operation]" << endl;
-	cout << "=====================================================================================" << endl;
+	cout << "============================================================================" << endl;
 	cout << "Operations: -e, -d, -t, -et, -help, -?, -h" << endl;
-	cout << "=====================================================================================" << endl;
-	cout << "Operation Explanation			[] - optional input" << endl;
-	cout << "-e file1 [file2]			  : Encodes file1 and places the out into file2. If no " << endl;
-	cout << "								file2 is provided it will take the name of file1 and" << endl;
-	cout << "								append .enc to it" << endl;
-	cout << "								at the end of file name if used" << endl;
-	cout << "-d file1 file2				  : Decodes file1 and places it into file2" << endl;
-	cout << "-t file1 [file2]			  : Creates a tree builder file from the input file1 and" << endl;
-	cout << "								and places it into file2. If no file2 is inputed it" << endl;
-	cout << "								take file1's name and append .htree" << endl;
-	cout << "-et file1 file2 [file3]	  : Encodes file1 using the tree builder file2 and places" << endl;
-	cout << "								the output in file3. If no file3 is inputed it takes" << endl;
-	cout << "								the name of file1 and appends .enc" << endl;
-	cout << "-help or -? or -h			  : Displays this screen again.";
+	cout << "============================================================================" << endl;
+	cout << "Operation Explanation		[] - optional input" << endl;
+	cout << "-e file1 [file2]		: Encodes file1 & places the out into file2 " << endl;
+	cout << "-d file1 file2			: Decodes file1 & places it into file2" << endl;
+	cout << "-t file1 [file2]		: Creates a tree builder file from the input" << endl;
+	cout << "				 file1 & places it into file2" << endl;
+	cout << "-et file1 file2 [file3]		: Encodes file1 using the tree builder file2" << endl;
+	cout << "				 & places the output in file3" << endl;
+	cout << "-help or -? or -h		: Displays this screen again.";
 }
 
 // This method is used to create an huffan tree and create a file for it. It is passed an input
@@ -151,6 +146,7 @@ void Huffman::writeToFileE(string inputFile, string outputFile, string treeOrder
 	if (input.peek() == -1)							// tests to see if inputFile is empty
 	{
 		cout << inputFile << " is empty!";
+		Huffman::~Huffman();
 		exit(1);
 	}
 
@@ -236,6 +232,7 @@ void Huffman::writeToFileD(string inputFile, string outputFile)
 		else											// OTHERWISE exit loop
 		{
 			cout << "Incomplete encoded file. Does not contain full huffman pair string.";
+			Huffman::~Huffman();
 			exit(1);
 		}
 	}
@@ -332,6 +329,7 @@ string Huffman::createTreeFromFileOrPairString(string treeFile, string treeOrder
 	if (treeOrder.length() != 510)	// if the string is no the length of 510 it is either incomplete or to large. Exit with code 1
 	{
 		cout << "Trees' order pairs was an incomplete or too larger";
+		Huffman::~Huffman();
 		exit(1);
 	}
 
@@ -398,6 +396,7 @@ string Huffman::buildTree(string inputFile)
 	if (input.peek() == -1)						// checks if the file is empty
 	{
 		cout << inputFile << " is empty!";
+		Huffman::~Huffman();
 		exit(1);
 	}
 
@@ -434,8 +433,6 @@ string Huffman::combineNodes()
 	while (secondLNum != 256)					// while secondLnum isn't equal to 256, set term in lowest if no other lowest is found continue through the loop.
 	{
 		node* parent = new node();				// intializing new nodes 
-		node* firstLNode = new node();
-		node* secondLNode = new node();
 
 		if (secondLNum < firstLNum)				// if secondLNum is lower than first number switch them
 		{
@@ -446,19 +443,9 @@ string Huffman::combineNodes()
 
 		treeOrder = treeOrder + (char)firstLNum + (char)secondLNum; // enter the pair order in treeOrder string
 
-		firstLNode->character = nodeArray[firstLNum]->character;	// set the firstLNode's attributes equal to the node array's index at firstLNum
-		firstLNode->numberOfInstances = nodeArray[firstLNum]->numberOfInstances;
-		firstLNode->LCH = nodeArray[firstLNum]->LCH;
-		firstLNode->RCH = nodeArray[firstLNum]->RCH;
-
-		secondLNode->character = nodeArray[secondLNum]->character;	// set the secondLNode's attributes equal to the node array's index at secondLNum
-		secondLNode->numberOfInstances = nodeArray[secondLNum]->numberOfInstances;
-		secondLNode->LCH = nodeArray[secondLNum]->LCH;
-		secondLNode->RCH = nodeArray[secondLNum]->RCH;
-
-		parent->numberOfInstances = firstLNode->numberOfInstances + secondLNode->numberOfInstances; //set parent's weight to firstLNode weight + secondLnodes weight
-		parent->LCH = firstLNode;	// Parents left child becomes firstLNode
-		parent->RCH = secondLNode;	// Parents right child becomes secondLNode
+		parent->numberOfInstances = nodeArray[firstLNum]->numberOfInstances + nodeArray[secondLNum]->numberOfInstances; //set parent's weight to firstLNode weight + secondLnodes weight
+		parent->LCH = nodeArray[firstLNum];		// Parents left child becomes firstLNode
+		parent->RCH = nodeArray[secondLNum];	// Parents right child becomes secondLNode
 
 		nodeArray[firstLNum] = parent;			// firstLNum index in nodeArray becomes the parent node
 		nodeArray[secondLNum] = nullptr;		// while the secondLNum index becomes null
@@ -489,6 +476,7 @@ void Huffman::fileOpeningTest(bool openTest, string file)
 	if(openTest)									// if the openTest is true then the file was unable to be opened
 	{
 		cout << file << " could not be opened!";	// print out the file path
+		Huffman::~Huffman();
 		exit(1);									// and exit the code
 	}
 }
@@ -500,6 +488,7 @@ void Huffman::outPathEqualsInPathTest(string inputPath, string outputPath)
 	if (outputPath == inputPath)										// path string equality test
 	{
 		cout << "Output can not refer to the same path as the input";	// error to be printed
+		Huffman::~Huffman();
 		exit(1);														// exit the code
 	}
 }
@@ -515,11 +504,13 @@ void Huffman::fileTypeTest(string inputFile, string type1, string type2)
 		if (type2 == "")													// and the type2 is nothing
 		{
 			cout << inputFile << " is not the correct type of file!";		// then produce error and exit
+			Huffman::~Huffman();
 			exit(1);
 		}
 		else if (fileType != type2)											// or the type2 is not null but the types still do not match
 		{
 			cout << inputFile << " is not the correct type of file!";		// produce error and exit
+			Huffman::~Huffman();
 			exit(1);
 		}
 	}
@@ -555,11 +546,25 @@ string Huffman::outputFileCheck(string inputFile, string outputFile, string type
 		if (fileType != type2)																	// and it's not equal to type2
 		{
 			cout << "Output file name enterted does not contain " + type1 + " or " + type2;		// then print out error and exit
+			Huffman::~Huffman();
 			exit(1);
 		}
 	}
 
 	return outputFile; // otherwise return outputFile because it is correct 
+}
+
+// makes one pass through the list returning all nodes in order but passes the root last
+Huffman::node* Huffman::postTraversal(node* p)
+{
+	if (p != nullptr)
+	{
+		if (p->LCH != nullptr) postTraversal(p->LCH);
+		if (p->RCH != nullptr) postTraversal(p->RCH);
+		return p;
+	}
+
+	return nodeArray[0] = new node();
 }
 
 //if (outputFile == "") treeFile.open(inputFile.substr(0, inputFile.find_last_of('.')) + ".htree", ios::out | ios::binary);	// if the file is nothing take the input file name and tack on .htree

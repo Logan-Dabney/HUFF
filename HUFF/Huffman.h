@@ -47,4 +47,5 @@ private:
 	void outPathEqualsInPathTest(string inputPath, string outputPath);							// tests to see if the output and inputfile refer to the same file
 	void fileTypeTest(string inputFile, string type1, string type2);							// tests to see if the file entered is the correct type
 	string outputFileCheck(string inputFile, string outputFile, string type1, string type2);	// tests to see if the output file is the correct type
+	node* postTraversal(node* p);
 };
